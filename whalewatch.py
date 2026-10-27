@@ -1150,8 +1150,12 @@ def main(argv=None):
 
     if args.cmd in ("run", "test-alert", "digest", "notify") and not getattr(args, "dry_run", False) \
             and not any(channels_configured().values()):
-        sys.exit("No alert channel is set up. Add TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID, or NTFY_TOPIC, "
-                 "as GitHub secrets (or use --dry-run to just print).")
+        msg = ("No alert channel is set up yet. Add TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID, or NTFY_TOPIC, "
+               "as GitHub secrets (or use --dry-run to just print).")
+        if os.environ.get("GITHUB_ACTIONS") and args.cmd in ("run", "digest", "notify"):
+            print(msg + " Skipping this run.")  # scheduled jobs wait quietly instead of failing every 5 minutes
+            return
+        sys.exit(msg)
 
     if args.cmd == "notify":
         ok = make_notifier(alerts)(args.title, args.message, args.click, ["mag"], 3)
