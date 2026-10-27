@@ -1,0 +1,104 @@
+# Who to follow, and when to ping your phone.
+#
+# wallet = the 0x… address from a trader's Polymarket profile (or from the scout report).
+# Soccer markets are ALWAYS skipped. That's built into the code and can't be switched off here.
+
+[alerts]
+# Ping when one trader puts at least this many dollars into one market.
+# Small fills are added together, so a $50K order split into 500 pieces still counts as $50K.
+min_bet_usd = 1000
+
+# Also ping when they sell (take profit or exit). Useful if you copied the entry.
+include_sells = true
+
+# Each trader below is in a group:
+#   group = "events"  -> alerts only on politics, economics and world-news bets
+#   group = "sports"  -> alerts only on NON-soccer sports bets (NBA, NFL, college, MLB, NHL...)
+# Soccer is blocked for every group and can't be switched on.
+# block_all_sports only applies to traders with no group set.
+block_all_sports = true
+
+# The daily recap lists every move of at least this size from the last 24 hours.
+digest_min_usd = 500
+
+timezone = "America/New_York"
+ntfy_server = "https://ntfy.sh"
+
+
+# ---- Watchlist (vetted Oct 27, 2026 on full profit history) ---------------
+# min_bet_usd = the bet size that pings you, set per trader so the whole list
+# sends roughly 15-20 pings a day. Raise a number to hear from someone less.
+
+# == Current events ==========================================================
+
+[[whales]]
+name = "Kickstand7"
+wallet = "0xd1acd3925d895de9aec98ff95f3a30c5279d08d5"
+group = "events"
+note = "Fed + US races; ~4 yrs, $1.6M profit"
+min_bet_usd = 7500
+
+[[whales]]
+name = "lava-lava"
+wallet = "0x629bc4a1e53e1d475beb7ea3d388791e96dd995a"
+group = "events"
+note = "Elections (US Senate, Brazil, Israel); 3.5 yrs, $1.2M"
+min_bet_usd = 5000
+
+[[whales]]
+name = "MysticFind"
+wallet = "0x7cf93583951552553bc0d243a8582a3410ed2798"
+group = "events"
+note = "Fed rates + AI valuations; up 88% of weeks"
+min_bet_usd = 2000
+
+[[whales]]
+name = "paddaa"
+wallet = "0x60a92c8620846d81f5ea17b0564e0d4b7c545a71"
+group = "events"
+note = "Senate, Iran, oil; steadiest record (max dip $33K)"
+min_bet_usd = 4000
+
+[[whales]]
+name = "defillama7"
+wallet = "0x4c8cdcdd4c92bf44e74a642254f7414de14de36f"
+group = "events"
+note = "Elections, mostly outside the US; 6 months, $570K"
+min_bet_usd = 5000
+
+# == Sports (soccer always filtered out) =====================================
+
+[[whales]]
+name = "BreakTheBank"
+wallet = "0xf0318c32136c2db7fec88b84869aee6a1106c80c"
+group = "sports"
+note = "NBA + NFL; $12M profit, #1 sports board; big swings"
+min_bet_usd = 100000
+
+[[whales]]
+name = "primm"
+wallet = "0xd38b71f3e8ed1af71983e5c309eac3dfa9b35029"
+group = "sports"
+note = "College football + NFL; 14 months, $3.4M profit"
+min_bet_usd = 5000
+
+[[whales]]
+name = "Nooserac"
+wallet = "0xf68a281980f8c13828e84e147e3822381d6e5b1b"
+group = "sports"
+note = "NBA, college football, NFL; 1.7 yrs, $1.6M profit"
+min_bet_usd = 25000
+
+[[whales]]
+name = "takeormake"
+wallet = "0xa38a455bbdd4b68486548b7e19da99903f4f821d"
+group = "sports"
+note = "NBA specialist; 10 months, $1.0M profit"
+min_bet_usd = 20000
+
+[[whales]]
+name = "mde4life1986"
+wallet = "0x54ce7dd357766fc3255645e55ef41edd51cc9f80"
+group = "sports"
+note = "College football, NFL, NBA; steadiest (max dip $87K)"
+min_bet_usd = 3000

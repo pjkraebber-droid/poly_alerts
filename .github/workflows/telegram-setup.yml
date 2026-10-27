@@ -1,0 +1,41 @@
+name: Telegram setup
+
+# Run this by hand after creating your bot (Actions tab -> Telegram setup -> Run workflow).
+# Step 1 lists the chats your bot can reach, with their IDs, on the run's summary page.
+# Step 2 sends a test message to every chat you've saved as a secret.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: List the chats your bot can reach
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python whalewatch.py telegram-chats --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Send a test message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_EVENTS: ${{ secrets.TELEGRAM_CHAT_EVENTS }}
+          TELEGRAM_CHAT_SPORTS: ${{ secrets.TELEGRAM_CHAT_SPORTS }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          if [ -z "$TELEGRAM_CHAT_ID" ] && [ -z "$NTFY_TOPIC" ]; then
+            echo "No chat saved yet - copy your chat ID from the table above into the TELEGRAM_CHAT_ID secret, then run this again."
+            exit 0
+          fi
+          python whalewatch.py test-alert

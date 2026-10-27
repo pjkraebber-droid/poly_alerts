@@ -1,0 +1,5 @@
+state.json
+state.json.tmp
+scout_*.csv
+__pycache__/
+.venv/

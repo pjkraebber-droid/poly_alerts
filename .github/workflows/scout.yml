@@ -1,0 +1,52 @@
+name: Scout traders
+
+# Ranks leaderboard traders for both groups (current events, and non-soccer
+# sports). Runs by itself every Sunday morning and pings your phone with a link
+# to the report; you can also run it by hand from the Actions tab.
+
+on:
+  schedule:
+    - cron: "0 14 * * 0"   # Sundays, 10am New York (9am in winter)
+  workflow_dispatch:
+    inputs:
+      period:
+        description: "Leaderboard window"
+        type: choice
+        options: [month, week, all]
+        default: month
+
+permissions:
+  contents: read
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rank current-events traders
+        run: python whalewatch.py scout --group events --period "${{ inputs.period || 'month' }}" --out scout_events.csv --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Rank sports traders (soccer excluded)
+        run: python whalewatch.py scout --group sports --period "${{ inputs.period || 'month' }}" --out scout_sports.csv --summary "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scout-report
+          path: scout_*.csv
+
+      - name: Send the report link to your phone
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          python whalewatch.py notify "Weekly scout report is ready" \
+            "Tap to see which traders look worth following (or dropping) in each group." \
+            --click "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" || true

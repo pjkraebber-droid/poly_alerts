@@ -1,0 +1,33 @@
+name: Daily recap
+
+# One phone message a day summing up every big move by your traders in the
+# last 24 hours. 12:30 UTC = 8:30am New York in daylight time, 7:30am in winter.
+
+on:
+  schedule:
+    - cron: "30 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Send the recap
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_EVENTS: ${{ secrets.TELEGRAM_CHAT_EVENTS }}
+          TELEGRAM_CHAT_SPORTS: ${{ secrets.TELEGRAM_CHAT_SPORTS }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+        run: python whalewatch.py digest --summary "$GITHUB_STEP_SUMMARY"
