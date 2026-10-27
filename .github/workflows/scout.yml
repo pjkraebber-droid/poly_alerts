@@ -6,7 +6,7 @@ name: Scout traders
 
 on:
   schedule:
-    - cron: "0 14 * * 0"   # Sundays, 10am New York (9am in winter)
+    - cron: "7 14 * * 0"   # Sundays, ~10am New York (9am in winter)
   workflow_dispatch:
     inputs:
       period:
