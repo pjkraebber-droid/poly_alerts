@@ -585,6 +585,81 @@ def make_notifier(alerts, dry_run=False, log=print, env=None, poster=None):
     return send
 
 
+def mask(value):
+    s = str(value)
+    return ("…" + s[-4:]) if len(s) > 4 else "…"
+
+
+def telegram_doctor(env=None, getter=None, poster=None):
+    """Check each piece of the Telegram setup. Returns (ok, [(level, message)]). Never prints secrets."""
+    env = os.environ if env is None else env
+    get = getter or (lambda url: http_get_json(url, {}, retries=1))
+    post = poster or http_post_json
+    out = []
+    raw = env.get("TELEGRAM_BOT_TOKEN", "")
+    token = raw.strip()
+    if not token:
+        return False, [("error", "TELEGRAM_BOT_TOKEN secret is missing or empty (check the name is exactly TELEGRAM_BOT_TOKEN).")]
+    if raw != token:
+        out.append(("warning", "TELEGRAM_BOT_TOKEN has spaces or a line break around it (ignored, but worth re-pasting)."))
+    if not re.fullmatch(r"\d{5,}:[A-Za-z0-9_-]{25,}", token):
+        hint = "it should look like 1234567890:AAH... with nothing else"
+        if token.lower().startswith("bot"):
+            hint = "remove the word 'bot' from the start"
+        elif " " in token or "\n" in token:
+            hint = "it contains spaces or several lines; paste only the token itself"
+        return False, out + [("error", f"TELEGRAM_BOT_TOKEN doesn't look like a bot token ({len(token)} characters): {hint}.")]
+    try:
+        me = get(f"https://api.telegram.org/bot{token}/getMe")
+    except ApiError:
+        return False, out + [("error", "Telegram rejected TELEGRAM_BOT_TOKEN (getMe failed). Copy the token from @BotFather again.")]
+    if not (isinstance(me, dict) and me.get("ok")):
+        return False, out + [("error", "Telegram rejected TELEGRAM_BOT_TOKEN. Copy the token from @BotFather again.")]
+    bot = (me.get("result") or {}).get("username", "?")
+    out.append(("notice", f"Bot token works: @{bot}."))
+    try:
+        chats = telegram_chats(token, getter=lambda url: get(url))
+        if chats:
+            out.append(("notice", "Chats that have messaged the bot recently: " +
+                        ", ".join(f"{c['type']} {mask(c['id'])}" for c in chats) + "."))
+    except Exception:
+        chats = []
+    chat = env.get("TELEGRAM_CHAT_ID", "").strip()
+    if not chat:
+        return False, out + [("error", "TELEGRAM_CHAT_ID secret is missing. Get your Id from @userinfobot and save it.")]
+    if not re.fullmatch(r"-?\d+", chat):
+        return False, out + [("error", f"TELEGRAM_CHAT_ID should be only digits (it has {len(chat)} characters "
+                                        "including something else). Paste just the number from @userinfobot.")]
+    ok = True
+    targets = [("TELEGRAM_CHAT_ID", chat)] + [(k, env.get(k, "").strip()) for k in
+                                              ("TELEGRAM_CHAT_EVENTS", "TELEGRAM_CHAT_SPORTS") if env.get(k, "").strip()]
+    for name, cid in targets:
+        try:
+            resp = post(f"https://api.telegram.org/bot{token}/sendMessage",
+                        {"chat_id": cid, "text": "✅ Poly alerts: test message. Alerts will arrive here."})
+            if resp.get("ok"):
+                out.append(("notice", f"Test message delivered to {name} ({mask(cid)})."))
+            else:
+                ok = False
+                out.append(("error", f"Telegram refused {name} ({mask(cid)}): {resp.get('description')}"))
+        except urllib.error.HTTPError as e:
+            ok = False
+            try:
+                desc = json.loads(e.read().decode("utf-8")).get("description")
+            except Exception:
+                desc = f"HTTP {e.code}"
+            hint = ""
+            if desc and "chat not found" in desc.lower():
+                hint = " The number doesn't match a chat with this bot: open your bot, tap Start, and use the Id from @userinfobot."
+            elif desc and ("initiate" in desc.lower() or "blocked" in desc.lower()):
+                hint = " Open your bot in Telegram and tap Start (or unblock it)."
+            out.append(("error", f"Telegram refused {name} ({mask(cid)}): {desc}.{hint}"))
+        except Exception as e:
+            ok = False
+            out.append(("error", f"Couldn't reach Telegram for {name}: {type(e).__name__}"))
+    return ok, out
+
+
 def telegram_chats(token, getter=None):
     """List the chats and channels a bot can see (people who messaged it, channels it was added to)."""
     get = getter or (lambda url: http_get_json(url, {"allowed_updates": json.dumps(
@@ -1121,9 +1196,18 @@ def main(argv=None):
 
     t = sub.add_parser("telegram-chats", help="list the Telegram chats/channels your bot can post to")
     t.add_argument("--summary", help="also write the list to this file")
+
+    sub.add_parser("doctor", help="check the Telegram setup step by step and send a test message")
     args = ap.parse_args(argv)
 
     alerts, whales = load_config(args.config)
+
+    if args.cmd == "doctor":
+        ok, results = telegram_doctor()
+        gh = bool(os.environ.get("GITHUB_ACTIONS"))
+        for level, msg in results:
+            print(f"::{level}::{msg}" if gh else f"[{level}] {msg}")
+        sys.exit(0 if ok else 1)
 
     if args.cmd == "telegram-chats":
         token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
