@@ -358,7 +358,7 @@ class FormatTests(unittest.TestCase):
         alerts, whales = ww.load_config(ww.CONFIG_PATH)
         self.assertGreaterEqual(len(whales), 3)
         self.assertTrue(alerts["block_all_sports"])
-        self.assertEqual({w["group"] for w in whales}, {"events", "sports"})
+        self.assertTrue({w["group"] for w in whales} <= {"events", "sports"})
 
 
 class TelegramTests(unittest.TestCase):

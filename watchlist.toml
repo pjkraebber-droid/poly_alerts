@@ -25,80 +25,78 @@ timezone = "America/New_York"
 ntfy_server = "https://ntfy.sh"
 
 
-# ---- Watchlist (vetted Oct 27, 2026 on full profit history) ---------------
-# min_bet_usd = the bet size that pings you, set per trader so the whole list
-# sends roughly 15-20 pings a day. Raise a number to hear from someone less.
-
-# == Current events ==========================================================
-
-[[whales]]
-name = "Kickstand7"
-wallet = "0xd1acd3925d895de9aec98ff95f3a30c5279d08d5"
-group = "events"
-note = "Fed + US races; ~4 yrs, $1.6M profit"
-min_bet_usd = 7500
-
-[[whales]]
-name = "lava-lava"
-wallet = "0x629bc4a1e53e1d475beb7ea3d388791e96dd995a"
-group = "events"
-note = "Elections (US Senate, Brazil, Israel); 3.5 yrs, $1.2M"
-min_bet_usd = 5000
-
-[[whales]]
-name = "MysticFind"
-wallet = "0x7cf93583951552553bc0d243a8582a3410ed2798"
-group = "events"
-note = "Fed rates + AI valuations; up 88% of weeks"
-min_bet_usd = 2000
-
-[[whales]]
-name = "paddaa"
-wallet = "0x60a92c8620846d81f5ea17b0564e0d4b7c545a71"
-group = "events"
-note = "Senate, Iran, oil; steadiest record (max dip $33K)"
-min_bet_usd = 4000
-
-[[whales]]
-name = "defillama7"
-wallet = "0x4c8cdcdd4c92bf44e74a642254f7414de14de36f"
-group = "events"
-note = "Elections, mostly outside the US; 6 months, $570K"
-min_bet_usd = 5000
-
-# == Sports (soccer always filtered out) =====================================
+# ---- Watchlist: top 10 sports whales (vetted Oct 30, 2026) ------------------
+# Picked from 1,035 sports-leaderboard traders: profitable, active, mostly
+# pregame, one side only (no arbitrage or line-fading), bets priced 25-75c.
+# min_bet_usd = the bet size that pings you, set per trader so the list sends
+# roughly 15 pings a day. Soccer is always filtered out.
 
 [[whales]]
 name = "BreakTheBank"
 wallet = "0xf0318c32136c2db7fec88b84869aee6a1106c80c"
 group = "sports"
-note = "NBA + NFL; $12M profit, #1 sports board; big swings"
-min_bet_usd = 100000
-
-[[whales]]
-name = "primm"
-wallet = "0xd38b71f3e8ed1af71983e5c309eac3dfa9b35029"
-group = "sports"
-note = "College football + NFL; 14 months, $3.4M profit"
-min_bet_usd = 5000
-
-[[whales]]
-name = "Nooserac"
-wallet = "0xf68a281980f8c13828e84e147e3822381d6e5b1b"
-group = "sports"
-note = "NBA, college football, NFL; 1.7 yrs, $1.6M profit"
-min_bet_usd = 25000
-
-[[whales]]
-name = "takeormake"
-wallet = "0xa38a455bbdd4b68486548b7e19da99903f4f821d"
-group = "sports"
-note = "NBA specialist; 10 months, $1.0M profit"
+note = "NBA + NFL; $12M lifetime, 100% pregame, never both sides; big swings"
 min_bet_usd = 20000
 
 [[whales]]
 name = "mde4life1986"
 wallet = "0x54ce7dd357766fc3255645e55ef41edd51cc9f80"
 group = "sports"
-note = "College football, NFL, NBA; steadiest (max dip $87K)"
-min_bet_usd = 3000
+note = "CFB, NBA, NFL; 100% pregame, never both sides; cleanest profile"
+min_bet_usd = 9000
+
+[[whales]]
+name = "ic4cream"
+wallet = "0x27f738fe203827445690339104aae35b20bc44b0"
+group = "sports"
+note = "NBA, CFB, NFL, NHL; 93% pregame; skip if he holds both sides"
+min_bet_usd = 6500
+
+[[whales]]
+name = "0xb4f9"
+wallet = "0xb4f978be63cdf75554b0b46a4262a6db597cc9a7"
+group = "sports"
+note = "NBA, CFB, NFL, MLB (unnamed wallet); ~1/3 live, check timing"
+min_bet_usd = 30000
+
+[[whales]]
+name = "Electricy"
+wallet = "0x701187150980c2421bc3c87a74dbdef31d75c6da"
+group = "sports"
+note = "CFB, NFL, MLB (+esports); ~2 yrs, up 73% of weeks"
+min_bet_usd = 1500
+
+[[whales]]
+name = "drainedandpoor"
+wallet = "0x5e6e2c3f06686f2607b86c90e35f536e81a1be00"
+group = "sports"
+note = "NBA, MLB (+esports, which Kalshi rarely lists); 100% pregame"
+min_bet_usd = 22000
+
+[[whales]]
+name = "Bagwell306"
+wallet = "0x9c76cdb43fb46454da005fbc82047a64a18ec926"
+group = "sports"
+note = "NBA, NFL, tennis; 97% pregame; smaller bets"
+min_bet_usd = 2500
+
+[[whales]]
+name = "Talvez10"
+wallet = "0xa71093cafc0c099b4ccab24c3cb8018d817923c4"
+group = "sports"
+note = "NBA, CFB, NHL, MLB; 100% pregame; volatile, down last 30 days"
+min_bet_usd = 20000
+
+[[whales]]
+name = "ArielFilipino"
+wallet = "0xe18ecc345e00ee7c4f2d1f676f3dd2acb112f826"
+group = "sports"
+note = "NBA, CFB, NFL; PROBATION: only ~1 month of history"
+min_bet_usd = 15000
+
+[[whales]]
+name = "googleplay"
+wallet = "0xe9b710551dd82a44e79203c2394a2b10163ace7b"
+group = "sports"
+note = "NBA; PROBATION: 7 weeks of history, ~$600K bets, huge swings"
+min_bet_usd = 300000
